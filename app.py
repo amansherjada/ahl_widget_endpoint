@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
-
+from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
@@ -36,7 +36,7 @@ pc = Pinecone(api_key=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT)
 index = pc.Index(PINECONE_INDEX_NAME)
 
 # HuggingFace Embeddings
-embedding_model = HuggingFaceEmbeddings()
+embedding_model = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 
 # Vector Store (LangChain style)
 vector_store = PineconeVectorStore(index=index, embedding=embedding_model)
