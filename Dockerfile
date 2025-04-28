@@ -1,9 +1,9 @@
-# Use an official slim Python image (not Alpine, not Python 3.13)
+# Correct base image
 FROM python:3.11-slim
 
-# Set environment variables to avoid Python buffering issues
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Prevent Python from buffering
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,21 +14,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
-# Set working directory inside container
+# Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
+# Copy requirements first for better Docker layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Upgrade pip and install python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Copy entire project files
+# Copy your application files
 COPY . .
 
-# Expose the port Flask uses
+# Expose port
 EXPOSE 5000
 
-# Command to run the app
+# Command to run your Flask app
 CMD ["python", "app.py"]
