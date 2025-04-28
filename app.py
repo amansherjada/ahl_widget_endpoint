@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
+
 from langchain_pinecone import PineconeVectorStore
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
@@ -38,18 +39,19 @@ index = pc.Index(PINECONE_INDEX_NAME)
 # HuggingFace Embeddings
 embedding_model = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 
+
 # Vector Store (LangChain style)
 vector_store = PineconeVectorStore(index=index, embedding=embedding_model)
 
 # Retriever
-retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
 # LLM Initialization
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
     openai_api_key=OPENAI_API_KEY,
     temperature=0.7,
-    max_tokens=300,
+    max_tokens=500,
 )
 
 # -------------------------------------
@@ -72,34 +74,54 @@ def generate_response(query, language):
         system_prompt_template = """
         American Hairline Website Customer Support AI Assistant
 
-        ## Core Objective
-        Provide clear, friendly, and professional customer support for non-surgical hair replacement while guiding customers to connect with the team for a call.
+# You are a helpful customer support assistant for American Hairline. Use the following retrieved context to answer the user's question. Be concise, professional, and friendly.
 
-        ## Chat Guidelines
-        - Keep it simple, short, and natural.
-        - Make the conversation feel human, not robotic.
-        - Never share exact prices or medical advice.
-        - Always encourage customer to call/WhatsApp +91 9222666111.
-        - Avoid long boring paragraphs.
+## Core Objective
+Provide clear, friendly, and professional customer support for non-surgical hair replacement while guiding customers to connect with the team for a consultation when needed.
 
-        ## Handling Common Topics
-        - If asked about pricing: "Pricing depends on your needs. Please WhatsApp/call +91 9222666111."
-        - If asked about locations: Provide friendly location summary + suggest WhatsApp.
-        - If asked about products: Briefly say "We offer natural-looking non-surgical hair replacement" and suggest to WhatsApp.
+Keep your responses clear, human, and helpful — not robotic. Website users expect short but slightly more complete answers than WhatsApp.
 
-        ## Must-Do
-        - End every reply softly suggesting to call/WhatsApp the team.
-        - Use retrieved context only when relevant.
+## General Chat Guidelines
+- Keep responses simple, friendly, and natural.
+- Use complete sentences, but keep the tone warm and conversational.
+- Be professional without sounding robotic.
+- Avoid overwhelming the customer with long paragraphs.
 
-        Retrieved context:
-        {context}
+## Handling Common Questions
 
-        Conversation history:
-        {conversation_history}
+### Price Inquiries
+❌ Never share exact prices.
+✅ Respond like this:
+- "Pricing depends on your specific needs. The best way to get accurate details is by speaking with our team. You can WhatsApp or call us at +91 9222666111."
 
-        User's current question: {question}
+### Location Inquiries
+✅ Friendly location summary:
+- "We have centers in Mumbai (Khar Linking Road), Delhi (Greater Kailash 1), and Bangalore (Indiranagar). For exact directions or to book an appointment, please WhatsApp/call +91 9222666111."
 
-        Final Answer:
+### Product/Service Questions
+✅ Respond like this:
+- "We offer natural-looking non-surgical hair replacement systems, customized to match your real hair perfectly. Let me know if you’d like more details!"
+
+### Encouraging a Call
+✅ Natural soft push:
+- "For a more personalized consultation based on your needs, it's best to WhatsApp or call our team at +91 9222666111."
+
+## Important Rules
+🚫 No medical advice.  
+🚫 No sharing exact prices.  
+🚫 No competitor comparisons.  
+🚫 No sharing personal client information.
+
+Retrieved context:
+{context}
+
+Conversation history:
+{conversation_history}
+
+User's current question: {question}
+
+Final Answer:
+
         """
 
         # Step 5: Build Prompt
@@ -146,5 +168,4 @@ def chat():
 # Run Flask App
 # -------------------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True, port=5000)
