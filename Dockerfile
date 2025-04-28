@@ -1,24 +1,31 @@
-# Use Python 3.11 Alpine as base image
-FROM python:3.11-alpine
+# Use Slim image instead of Alpine
+FROM python:3.11-slim
 
-# Install build dependencies required for numpy and other packages
-RUN apk add --no-cache gcc g++ musl-dev libffi-dev
+# Install build tools and other essentials
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    libffi-dev \
+    libpq-dev \
+    curl \
+    && apt-get clean
 
-# Set working directory inside container
+# Set working directory
 WORKDIR /app
 
-# Copy requirements.txt first (for better caching)
+# Copy requirements first
 COPY requirements.txt .
 
-# Upgrade pip and install Python dependencies
+# Install Python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Now copy the rest of the application code
+# Copy your app code
 COPY . .
 
-# Expose the port your app runs on
+# Expose Flask app port
 EXPOSE 5000
 
-# Command to run the app
+# Run the app
 CMD ["python", "app.py"]
