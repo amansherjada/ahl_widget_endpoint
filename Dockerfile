@@ -1,21 +1,24 @@
-FROM python:3.11-slim
+# Use Python 3.11 Alpine as base image
+FROM python:3.11-alpine
 
+# Install build dependencies required for numpy and other packages
+RUN apk add --no-cache gcc g++ musl-dev libffi-dev
+
+# Set working directory inside container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y gcc g++ libffi-dev
+# Copy requirements.txt first (for better caching)
+COPY requirements.txt .
 
-# Copy app files
-COPY app.py /app/
-COPY requirements.txt /app/
-
-# Install python dependencies
+# Upgrade pip and install Python dependencies
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-RUN mkdir -p /secrets
+# Now copy the rest of the application code
+COPY . .
 
-ENV PORT 8080
-EXPOSE 8080
+# Expose the port your app runs on
+EXPOSE 5000
 
+# Command to run the app
 CMD ["python", "app.py"]
