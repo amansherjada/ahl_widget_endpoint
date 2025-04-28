@@ -3,8 +3,8 @@ FROM python:3.13-alpine
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies (add full stack for numpy, wheels, etc)
-RUN apk add --no-cache gcc musl-dev libffi-dev python3-dev py3-pip build-base lapack-dev libatlas-base-dev
+# Install system dependencies (add g++ and build essentials)
+RUN apk add --no-cache gcc g++ musl-dev libffi-dev python3-dev py3-pip build-base lapack-dev libatlas-base-dev
 
 # Copy application files
 COPY app.py /app/
