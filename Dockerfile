@@ -1,17 +1,17 @@
-# Use a secure, lightweight Python 3.13 Alpine base
 FROM python:3.13-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies (Alpine package names are different)
-RUN apk add --no-cache gcc musl-dev libffi-dev
+# Install system dependencies (add full stack for numpy, wheels, etc)
+RUN apk add --no-cache gcc musl-dev libffi-dev python3-dev py3-pip build-base lapack-dev libatlas-base-dev
 
 # Copy application files
 COPY app.py /app/
 COPY requirements.txt /app/
 
 # Install Python dependencies
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Create directory for mounted secrets
