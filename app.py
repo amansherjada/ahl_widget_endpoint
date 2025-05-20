@@ -67,8 +67,6 @@ def generate_response(query, language):
         contexts = [doc.page_content for doc in documents]
         context_text = "\n\n".join(contexts) if contexts else "No relevant information found."
 
-        # Step 3: Conversation History (optional future extension)
-        conversation_history = ""
 
         # Step 4: Professional Prompt
         system_prompt_template = """
@@ -115,9 +113,6 @@ Keep your responses clear, human, and helpful — not robotic. Website users exp
 Retrieved context:
 {context}
 
-Conversation history:
-{conversation_history}
-
 User's current question: {question}
 
 Final Answer:
@@ -127,7 +122,7 @@ Final Answer:
         # Step 5: Build Prompt
         prompt = PromptTemplate(
             template=system_prompt_template,
-            input_variables=["context", "conversation_history", "question"]
+            input_variables=["context", "question"]
         )
 
         # Step 6: Load QA Chain
@@ -137,7 +132,6 @@ Final Answer:
         result = qa_chain({
             "input_documents": documents,
             "context": context_text,
-            "conversation_history": conversation_history,
             "question": query,
         })
 
