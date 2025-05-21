@@ -51,7 +51,7 @@ llm = ChatOpenAI(
     model="gpt-4o",
     openai_api_key=OPENAI_API_KEY,
     temperature=0.7,
-    max_tokens=500,
+    max_tokens=350,
 )
 
 # -------------------------------------
