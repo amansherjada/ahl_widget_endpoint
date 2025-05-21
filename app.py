@@ -48,7 +48,7 @@ retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
 # LLM Initialization
 llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
+    model="gpt-4o",
     openai_api_key=OPENAI_API_KEY,
     temperature=0.7,
     max_tokens=500,
